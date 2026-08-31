@@ -1,0 +1,7 @@
+# Cloudflare Pages applies these headers to matching static files.
+# They provide sensible browser security defaults without needing a server.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

@@ -1,0 +1,66 @@
+/*
+ * Design tokens
+ * ------------
+ * Centralizing repeated colors and sizes here means a future design refresh
+ * can be made by changing a few values rather than searching the whole file.
+ */
+:root {
+  --page-background: #f4f7fb;
+  --card-background: #ffffff;
+  --primary-text: #172033;
+  --secondary-text: #52607a;
+  --accent: #2563eb;
+  --shadow: 0 16px 40px rgb(23 32 51 / 12%);
+}
+
+/*
+ * Make element dimensions predictable: padding and borders are included in
+ * declared widths and heights. This avoids common layout surprises.
+ */
+* {
+  box-sizing: border-box;
+}
+
+/*
+ * Center the card both vertically and horizontally. `min-height: 100vh`
+ * fills at least the visible browser height, while the padding keeps the
+ * card clear of the screen edges on small devices.
+ */
+body {
+  display: grid;
+  min-height: 100vh;
+  margin: 0;
+  padding: 1.5rem;
+  place-items: center;
+  background: var(--page-background);
+  color: var(--primary-text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/*
+ * The content container remains comfortably readable on wide screens but
+ * naturally shrinks to fit a mobile viewport.
+ */
+.welcome-card {
+  width: min(100%, 36rem);
+  padding: clamp(2rem, 8vw, 4rem);
+  border-top: 0.35rem solid var(--accent);
+  border-radius: 1rem;
+  background: var(--card-background);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+/* Remove the browser's default heading margin for consistent card spacing. */
+h1 {
+  margin: 0;
+  font-size: clamp(2.25rem, 9vw, 4.5rem);
+  line-height: 1.1;
+}
+
+/* The paragraph is visually secondary while remaining easy to read. */
+p {
+  margin: 1rem 0 0;
+  color: var(--secondary-text);
+  font-size: clamp(1.125rem, 3vw, 1.5rem);
+}

@@ -1,0 +1,5 @@
+# Local Cloudflare/Wrangler state should not be committed.
+.wrangler/
+
+# Operating-system metadata files are machine-specific.
+.DS_Store
