@@ -1,0 +1,63 @@
+/*
+  Reusable color tokens live here so a future visual refresh only requires
+  changing a few values rather than searching through every selector.
+*/
+:root {
+  --background-start: #0f172a;
+  --background-end: #1d4ed8;
+  --card-background: rgb(255 255 255 / 95%);
+  --heading: #172554;
+  --body-text: #334155;
+}
+
+/*
+  Reset the browser's default page margin and ensure the page can occupy the
+  full screen. The system font stack avoids downloading external font files.
+*/
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  color: var(--body-text);
+  background: linear-gradient(135deg, var(--background-start), var(--background-end));
+}
+
+/*
+  CSS Grid centers the message card vertically and horizontally at every
+  viewport size. `padding` keeps it away from the screen edges on mobile.
+*/
+.hero {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+/*
+  The card contains all visible copy. `max-width` preserves readable line
+  lengths if this basic app later grows into a longer introduction.
+*/
+.message {
+  width: min(100%, 36rem);
+  padding: clamp(2rem, 8vw, 5rem);
+  text-align: center;
+  background: var(--card-background);
+  border-radius: 1.5rem;
+  box-shadow: 0 1.5rem 3.75rem rgb(15 23 42 / 35%);
+}
+
+/* The large, responsive title is the visual focal point of the page. */
+h1 {
+  margin: 0;
+  color: var(--heading);
+  font-size: clamp(2.5rem, 9vw, 5.5rem);
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+/* This spacing separates the supporting text from the heading. */
+p {
+  margin: 1.25rem 0 0;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+}

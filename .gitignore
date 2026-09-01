@@ -1,0 +1,5 @@
+# Local operating-system metadata should not be committed.
+.DS_Store
+
+# Wrangler can create this directory during optional local Cloudflare testing.
+.wrangler/
