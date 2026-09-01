@@ -31,15 +31,20 @@ Then visit [http://localhost:8000](http://localhost:8000).
 
 ## Deploy to Cloudflare Pages
 
-This is a plain static site, so Cloudflare Pages can deploy it without a framework or build command.
+This project is deployed as a Cloudflare Pages **Direct Upload** project. It has
+no framework or build step: the repository root is uploaded as the static site.
 
-1. Create a GitHub repository named `my-app` and push this project's files when you are ready.
-2. In the Cloudflare dashboard, go to **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
-3. Choose the GitHub `my-app` repository.
-4. In the build settings, set **Build command** to empty and **Build output directory** to `.` (the repository root).
-5. Deploy. Future pushes to the selected production branch will automatically trigger new deployments.
+To publish a later version from the project directory, run:
+
+```bash
+npx wrangler pages deploy . --project-name=my-app
+```
+
+Cloudflare Pages will serve the production deployment at a `pages.dev` address.
+Direct Upload projects cannot later be switched to Cloudflare's Git integration,
+so use the command above whenever you want to publish new changes.
 
 ## Notes
 
-- No Cloudflare account configuration is stored in this repository.
-- No deployment or GitHub push has been made yet.
+- No Cloudflare account configuration or credentials are stored in this repository.
+- The source is stored on GitHub; deployments are published directly with Wrangler.
