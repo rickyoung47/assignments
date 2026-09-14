@@ -1,35 +1,70 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
   <head>
-    <!--
-      `charset` lets the browser correctly display text from many languages.
-      `viewport` makes the layout use the device width on phones and tablets.
-    -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="A simple Hello World page for Jae Seung Lee."
-    />
-    <title>Hello World!</title>
-
-    <!--
-      All visual styling lives in a separate file. Keeping structure (HTML)
-      and presentation (CSS) separate makes future edits straightforward.
-    -->
+    <meta name="description" content="정수를 입력하면 소수인지 바로 확인할 수 있는 앱입니다." />
+    <title>소수 판별기</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <!--
-      `main` identifies the page's primary content for assistive technology.
-      This is the only application content, so no JavaScript is required.
-    -->
-    <main class="welcome-card">
-      <!-- The requested page title. Change this text to update the greeting. -->
-      <h1>Hello World!</h1>
-
-      <!-- The requested introduction text. -->
-      <p>I'm Jae Seung Lee</p>
+    <main class="prime-card">
+      <p class="eyebrow">NUMBER CHECKER</p>
+      <h1>소수 판별기</h1>
+      <p class="intro">정수를 입력하면 소수인지 바로 알려드려요.</p>
+      <form id="prime-form" novalidate>
+        <label for="number-input">확인할 정수</label>
+        <div class="input-row">
+          <input id="number-input" name="number" type="text" inputmode="numeric" autocomplete="off" placeholder="예: 17" aria-describedby="input-hint" />
+          <button type="submit">판별하기</button>
+        </div>
+        <p id="input-hint" class="hint">음수와 0, 1은 소수가 아닙니다.</p>
+      </form>
+      <section id="result" class="result" aria-live="polite" hidden>
+        <span id="result-icon" class="result-icon" aria-hidden="true"></span>
+        <p id="result-text"></p>
+      </section>
     </main>
+    <script>
+      const form = document.querySelector("#prime-form");
+      const input = document.querySelector("#number-input");
+      const result = document.querySelector("#result");
+      const resultIcon = document.querySelector("#result-icon");
+      const resultText = document.querySelector("#result-text");
+      function isPrime(number) {
+        if (number < 2) return false;
+        if (number === 2) return true;
+        if (number % 2 === 0) return false;
+        for (let divisor = 3; divisor * divisor <= number; divisor += 2) if (number % divisor === 0) return false;
+        return true;
+      }
+      function showResult(message, type, icon) {
+        result.hidden = false;
+        result.className = `result ${type}`;
+        resultIcon.textContent = icon;
+        resultText.textContent = message;
+      }
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const value = input.value.trim();
+        if (!/^[+-]?\d+$/.test(value)) {
+          showResult("정수만 입력해 주세요.", "warning", "!");
+          input.focus();
+          return;
+        }
+        const number = Number(value);
+        if (!Number.isSafeInteger(number)) {
+          showResult("안전하게 계산할 수 있는 범위의 정수를 입력해 주세요.", "warning", "!");
+          return;
+        }
+        const prime = isPrime(number);
+        showResult(
+          prime ? `${number.toLocaleString("ko-KR")}은(는) 소수입니다!` : `${number.toLocaleString("ko-KR")}은(는) 소수가 아닙니다.`,
+          prime ? "prime" : "not-prime",
+          prime ? "✓" : "×"
+        );
+      });
+      input.addEventListener("input", () => { result.hidden = true; });
+    </script>
   </body>
 </html>
