@@ -94,9 +94,10 @@ button {
 button:hover { border-color: var(--orange); color: var(--orange); }
 .hint { margin: .7rem 0 0; color: var(--muted); font-family: Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif; font-size: .84rem; }
 
-.history-list { display: grid; gap: .55rem; margin: 0; padding: 0; list-style: none; }
+.history-card { height: 31.5rem; display: flex; flex-direction: column; overflow: hidden; }
+.history-list { display: grid; flex: 1; gap: .55rem; margin: 0; padding: 0 .25rem 0 0; overflow-y: auto; list-style: none; scrollbar-color: var(--line-soft) var(--panel); }
 .history-list button { width: 100%; padding: .75rem .85rem; border-color: #173c49; text-align: left; }
-.history-list .history-prime { border-color: var(--red); color: var(--red); }
+.history-list .history-prime { border-color: var(--green); color: var(--green); }
 
 .result { display: flex; align-items: flex-start; gap: .75rem; margin-top: 1.75rem; padding: 1rem 1.1rem; border: 1px solid currentColor; border-radius: .45rem; font-family: Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif; font-weight: 700; }
 .result p { margin: 0; }
@@ -110,6 +111,8 @@ button:hover { border-color: var(--orange); color: var(--orange); }
   .app-layout { grid-template-columns: 1fr; }
   .history-card,
   .prime-card { min-height: auto; }
+  .history-card { height: auto; }
+  .history-list { max-height: 17rem; }
 }
 
 @media (max-width: 28rem) {

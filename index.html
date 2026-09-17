@@ -47,17 +47,7 @@
       const factorText = document.querySelector("#factor-text");
       const historyList = document.querySelector("#history-list");
       const historyEmpty = document.querySelector("#history-empty");
-      const historyKey = "prime-checker-history";
       let history = [];
-
-      try {
-        const savedHistory = JSON.parse(localStorage.getItem(historyKey)) || [];
-        history = Array.isArray(savedHistory)
-          ? savedHistory.map((entry) => typeof entry === "string" ? buildHistoryRecord(entry) : entry)
-          : [];
-      } catch {
-        history = [];
-      }
 
       function renderHistory() {
         historyList.replaceChildren();
@@ -81,11 +71,6 @@
 
       function saveHistory(value) {
         history = [buildHistoryRecord(value), ...history].slice(0, 12);
-        try {
-          localStorage.setItem(historyKey, JSON.stringify(history));
-        } catch {
-          // The app continues to work if storage is unavailable.
-        }
         renderHistory();
       }
       function isPrime(number) {
@@ -139,6 +124,11 @@
       form.addEventListener("submit", (event) => {
         event.preventDefault();
         const value = input.value.trim();
+        if (!value) {
+          result.hidden = true;
+          input.focus();
+          return;
+        }
         if (!/^[+-]?\d+$/.test(value)) {
           showResult("정수만 입력해 주세요.", "warning", "!");
           input.focus();
