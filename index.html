@@ -27,7 +27,7 @@
             <input id="number-input" name="number" type="text" inputmode="numeric" autocomplete="off" placeholder="예: 17" aria-describedby="input-hint" />
             <button type="submit">판별하기</button>
           </div>
-          <p id="input-hint" class="hint">음수와 0, 1은 소수가 아닙니다.</p>
+          <p id="input-hint" class="hint">음수는 입력할 수 없으며, 0과 1은 소수가 아닙니다.</p>
         </form>
         <section id="result" class="result" aria-live="polite" hidden>
           <span id="result-icon" class="result-icon" aria-hidden="true"></span>
@@ -51,7 +51,10 @@
       let history = [];
 
       try {
-        history = JSON.parse(localStorage.getItem(historyKey)) || [];
+        const savedHistory = JSON.parse(localStorage.getItem(historyKey)) || [];
+        history = Array.isArray(savedHistory)
+          ? savedHistory.map((entry) => typeof entry === "string" ? buildHistoryRecord(entry) : entry)
+          : [];
       } catch {
         history = [];
       }
@@ -59,13 +62,16 @@
       function renderHistory() {
         historyList.replaceChildren();
         historyEmpty.hidden = history.length > 0;
-        history.forEach((value) => {
+        history.forEach((record) => {
           const item = document.createElement("li");
           const historyButton = document.createElement("button");
           historyButton.type = "button";
-          historyButton.textContent = Number(value).toLocaleString("ko-KR");
+          historyButton.className = record.kind === "prime" ? "history-prime" : "";
+          historyButton.textContent = record.factorization
+            ? `${record.value} = ${record.factorization.join(" × ")}`
+            : record.value;
           historyButton.addEventListener("click", () => {
-            input.value = value;
+            input.value = record.value;
             input.focus();
           });
           item.append(historyButton);
@@ -74,7 +80,7 @@
       }
 
       function saveHistory(value) {
-        history = [value, ...history.filter((item) => item !== value)].slice(0, 12);
+        history = [buildHistoryRecord(value), ...history].slice(0, 12);
         try {
           localStorage.setItem(historyKey, JSON.stringify(history));
         } catch {
@@ -88,6 +94,27 @@
         if (number % 2 === 0) return false;
         for (let divisor = 3; divisor * divisor <= number; divisor += 2) if (number % divisor === 0) return false;
         return true;
+      }
+      function primeFactors(number) {
+        const factors = [];
+        let remaining = number;
+
+        for (let divisor = 2; divisor * divisor <= remaining; divisor += divisor === 2 ? 1 : 2) {
+          while (remaining % divisor === 0) {
+            factors.push(divisor);
+            remaining /= divisor;
+          }
+        }
+        if (remaining > 1) factors.push(remaining);
+        return factors;
+      }
+      function buildHistoryRecord(value) {
+        const number = Number(value);
+        if (isPrime(number)) return { value, kind: "prime" };
+
+        const factors = primeFactors(number);
+        if (factors.length) return { value, kind: "composite", factorization: factors };
+        return { value, kind: "non-factorable" };
       }
       function uniquePrimeFactors(number) {
         const factors = [];
@@ -120,6 +147,11 @@
         const number = Number(value);
         if (!Number.isSafeInteger(number)) {
           showResult("안전하게 계산할 수 있는 범위의 정수를 입력해 주세요.", "warning", "!");
+          return;
+        }
+        if (number < 0) {
+          showResult("자연수만 입력해 주세요.", "warning", "!");
+          input.focus();
           return;
         }
         saveHistory(value);
