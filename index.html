@@ -22,7 +22,10 @@
       </form>
       <section id="result" class="result" aria-live="polite" hidden>
         <span id="result-icon" class="result-icon" aria-hidden="true"></span>
-        <p id="result-text"></p>
+        <div>
+          <p id="result-text"></p>
+          <p id="factor-text" class="factor-text" hidden></p>
+        </div>
       </section>
     </main>
     <script>
@@ -31,6 +34,7 @@
       const result = document.querySelector("#result");
       const resultIcon = document.querySelector("#result-icon");
       const resultText = document.querySelector("#result-text");
+      const factorText = document.querySelector("#factor-text");
       function isPrime(number) {
         if (number < 2) return false;
         if (number === 2) return true;
@@ -38,11 +42,25 @@
         for (let divisor = 3; divisor * divisor <= number; divisor += 2) if (number % divisor === 0) return false;
         return true;
       }
-      function showResult(message, type, icon) {
+      function uniquePrimeFactors(number) {
+        const factors = [];
+        let remaining = Math.abs(number);
+
+        for (let divisor = 2; divisor * divisor <= remaining; divisor += divisor === 2 ? 1 : 2) {
+          if (remaining % divisor !== 0) continue;
+          factors.push(divisor);
+          while (remaining % divisor === 0) remaining /= divisor;
+        }
+        if (remaining > 1) factors.push(remaining);
+        return factors;
+      }
+      function showResult(message, type, icon, details = "") {
         result.hidden = false;
         result.className = `result ${type}`;
         resultIcon.textContent = icon;
         resultText.textContent = message;
+        factorText.hidden = !details;
+        factorText.textContent = details;
       }
       form.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -58,11 +76,22 @@
           return;
         }
         const prime = isPrime(number);
-        showResult(
-          prime ? `${number.toLocaleString("ko-KR")}은(는) 소수입니다!` : `${number.toLocaleString("ko-KR")}은(는) 소수가 아닙니다.`,
-          prime ? "prime" : "not-prime",
-          prime ? "✓" : "×"
-        );
+        if (prime) {
+          showResult(`${number.toLocaleString("ko-KR")}은(는) 소수입니다!`, "prime", "✓");
+          return;
+        }
+
+        const factors = uniquePrimeFactors(number);
+        let details = "";
+        if (factors.length) {
+          const baseNumber = Math.abs(number).toLocaleString("ko-KR");
+          details = `${baseNumber}의 서로 다른 소인수: ${factors.map((factor) => factor.toLocaleString("ko-KR")).join(", ")}`;
+        } else if (number === 0) {
+          details = "0은 소인수분해할 수 없습니다.";
+        } else {
+          details = "1과 -1에는 소인수가 없습니다.";
+        }
+        showResult(`${number.toLocaleString("ko-KR")}은(는) 소수가 아닙니다.`, "not-prime", "×", details);
       });
       input.addEventListener("input", () => { result.hidden = true; });
     </script>
