@@ -8,26 +8,36 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="prime-card">
-      <p class="eyebrow">Prime number checker</p>
-      <h1>소수 판별기</h1>
-      <p class="intro">정수를 입력하면 소수인지 바로 알려드려요.</p>
-      <form id="prime-form" novalidate>
-        <label for="number-input">확인할 정수</label>
-        <div class="input-row">
-          <input id="number-input" name="number" type="text" inputmode="numeric" autocomplete="off" placeholder="예: 17" aria-describedby="input-hint" />
-          <button type="submit">판별하기</button>
-        </div>
-        <p id="input-hint" class="hint">음수와 0, 1은 소수가 아닙니다.</p>
-      </form>
-      <section id="result" class="result" aria-live="polite" hidden>
-        <span id="result-icon" class="result-icon" aria-hidden="true"></span>
-        <div>
-          <p id="result-text"></p>
-          <p id="factor-text" class="factor-text" hidden></p>
-        </div>
-      </section>
-    </main>
+    <div class="app-layout">
+      <aside class="history-card" aria-labelledby="history-title">
+        <p class="panel-label">INPUT LOG</p>
+        <h2 id="history-title">입력 기록</h2>
+        <p class="history-help">판별한 정수가 여기에 남습니다.</p>
+        <ol id="history-list" class="history-list"></ol>
+        <p id="history-empty" class="history-empty">아직 입력한 정수가 없습니다.</p>
+      </aside>
+
+      <main class="prime-card">
+        <p class="eyebrow">Prime number checker</p>
+        <h1>소수 판별기</h1>
+        <p class="intro">정수를 입력하면 소수인지 바로 알려드려요.</p>
+        <form id="prime-form" novalidate>
+          <label for="number-input">확인할 정수</label>
+          <div class="input-row">
+            <input id="number-input" name="number" type="text" inputmode="numeric" autocomplete="off" placeholder="예: 17" aria-describedby="input-hint" />
+            <button type="submit">판별하기</button>
+          </div>
+          <p id="input-hint" class="hint">음수와 0, 1은 소수가 아닙니다.</p>
+        </form>
+        <section id="result" class="result" aria-live="polite" hidden>
+          <span id="result-icon" class="result-icon" aria-hidden="true"></span>
+          <div>
+            <p id="result-text"></p>
+            <p id="factor-text" class="factor-text" hidden></p>
+          </div>
+        </section>
+      </main>
+    </div>
     <script>
       const form = document.querySelector("#prime-form");
       const input = document.querySelector("#number-input");
@@ -35,6 +45,43 @@
       const resultIcon = document.querySelector("#result-icon");
       const resultText = document.querySelector("#result-text");
       const factorText = document.querySelector("#factor-text");
+      const historyList = document.querySelector("#history-list");
+      const historyEmpty = document.querySelector("#history-empty");
+      const historyKey = "prime-checker-history";
+      let history = [];
+
+      try {
+        history = JSON.parse(localStorage.getItem(historyKey)) || [];
+      } catch {
+        history = [];
+      }
+
+      function renderHistory() {
+        historyList.replaceChildren();
+        historyEmpty.hidden = history.length > 0;
+        history.forEach((value) => {
+          const item = document.createElement("li");
+          const historyButton = document.createElement("button");
+          historyButton.type = "button";
+          historyButton.textContent = Number(value).toLocaleString("ko-KR");
+          historyButton.addEventListener("click", () => {
+            input.value = value;
+            input.focus();
+          });
+          item.append(historyButton);
+          historyList.append(item);
+        });
+      }
+
+      function saveHistory(value) {
+        history = [value, ...history.filter((item) => item !== value)].slice(0, 12);
+        try {
+          localStorage.setItem(historyKey, JSON.stringify(history));
+        } catch {
+          // The app continues to work if storage is unavailable.
+        }
+        renderHistory();
+      }
       function isPrime(number) {
         if (number < 2) return false;
         if (number === 2) return true;
@@ -75,6 +122,7 @@
           showResult("안전하게 계산할 수 있는 범위의 정수를 입력해 주세요.", "warning", "!");
           return;
         }
+        saveHistory(value);
         const prime = isPrime(number);
         if (prime) {
           showResult(`${number.toLocaleString("ko-KR")}은(는) 소수입니다!`, "prime", "✓");
@@ -94,6 +142,7 @@
         showResult(`${number.toLocaleString("ko-KR")}은(는) 소수가 아닙니다.`, "not-prime", "×", details);
       });
       input.addEventListener("input", () => { result.hidden = true; });
+      renderHistory();
     </script>
   </body>
 </html>
