@@ -95,11 +95,12 @@ button:hover { border-color: var(--orange); color: var(--orange); }
 .hint { margin: .7rem 0 0; color: var(--muted); font-family: Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif; font-size: .84rem; }
 
 .history-card { height: 31.5rem; display: flex; flex-direction: column; overflow: hidden; }
-.history-list { display: grid; flex: 1; gap: .55rem; margin: 0; padding: 0 .25rem 0 0; overflow-y: auto; list-style: none; scrollbar-color: var(--line-soft) var(--panel); }
+.history-list { display: grid; flex: 1; align-content: start; gap: .55rem; margin: 0; padding: 0 .25rem 0 0; overflow-y: auto; list-style: none; scrollbar-color: var(--line-soft) var(--panel); }
 .history-list button { width: 100%; padding: .75rem .85rem; border-color: #173c49; text-align: left; }
 .history-list .history-prime { border-color: var(--green); color: var(--green); }
 
 .result { display: flex; align-items: flex-start; gap: .75rem; margin-top: 1.75rem; padding: 1rem 1.1rem; border: 1px solid currentColor; border-radius: .45rem; font-family: Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif; font-weight: 700; }
+.result[hidden] { display: none !important; }
 .result p { margin: 0; }
 .result-icon { display: grid; width: 1.65rem; height: 1.65rem; flex: 0 0 auto; place-items: center; border-radius: .2rem; color: var(--page); }
 .factor-text { margin-top: .35rem !important; font-size: .9rem; font-weight: 600; opacity: .88; }

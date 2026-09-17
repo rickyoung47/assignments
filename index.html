@@ -58,7 +58,7 @@
           historyButton.type = "button";
           historyButton.className = record.kind === "prime" ? "history-prime" : "";
           historyButton.textContent = record.factorization
-            ? `${record.value} = ${record.factorization.join(" × ")}`
+            ? `${record.value} = ${formatFactorization(record.factorization)}`
             : record.value;
           historyButton.addEventListener("click", () => {
             input.value = record.value;
@@ -92,6 +92,21 @@
         }
         if (remaining > 1) factors.push(remaining);
         return factors;
+      }
+      function formatFactorization(factors) {
+        const superscripts = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"];
+        const groups = [];
+
+        factors.forEach((factor) => {
+          const lastGroup = groups[groups.length - 1];
+          if (lastGroup && lastGroup.factor === factor) lastGroup.count += 1;
+          else groups.push({ factor, count: 1 });
+        });
+
+        return groups.map(({ factor, count }) => {
+          const exponent = count > 1 ? String(count).split("").map((digit) => superscripts[digit]).join("") : "";
+          return `${factor}${exponent}`;
+        }).join(" × ");
       }
       function buildHistoryRecord(value) {
         const number = Number(value);
