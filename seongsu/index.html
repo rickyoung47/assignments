@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f3f5f2">
+    <meta name="description" content="서울시 상권분석서비스 추정매출로 보는 성수 네 행정동 상권">
+    <title>성수 상권 리포트 · 2026 1분기</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="#top" aria-label="성수 상권 리포트 처음으로">
+          <span class="brand-mark" aria-hidden="true">S</span>
+          <span>SEONGSU <span class="brand-divider">/</span> LOCAL DATA</span>
+        </a>
+        <div class="header-meta"><span class="live-dot" aria-hidden="true"></span> 서울시 상권분석서비스</div>
+      </header>
+
+      <section class="intro" id="top">
+        <div>
+          <p class="eyebrow">NEIGHBORHOOD SALES · SEOUL</p>
+          <h1>성수 상권 리포트<span class="title-period">.</span></h1>
+          <p class="intro-copy">네 개 행정동의 추정매출을 지도와 업종별로 살펴보세요.</p>
+        </div>
+        <div class="quarter-stamp">
+          <span class="stamp-label">기준 분기</span>
+          <strong>2026 <span>Q1</span></strong>
+          <span class="stamp-caption">2026년 1분기</span>
+        </div>
+      </section>
+
+      <section class="panel map-panel" aria-labelledby="map-title">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">01 <span>AREA MAP</span></p>
+            <h2 id="map-title">성수 네 동</h2>
+          </div>
+          <p class="panel-hint">지도를 눌러 행정동을 선택하세요</p>
+        </div>
+        <div class="map-layout">
+          <div class="map-frame" id="map-frame">
+            <div class="map-loading" id="map-loading">행정동 경계를 불러오는 중</div>
+            <svg id="neighborhood-map" class="neighborhood-map" role="group" aria-label="성수 네 행정동 경계 지도" viewBox="0 0 860 350" hidden></svg>
+          </div>
+          <aside class="map-aside">
+            <p class="aside-label">행정동 선택</p>
+            <div class="area-list" id="area-list" aria-label="행정동 목록"></div>
+            <div class="selected-area-note">
+              <span class="note-rule"></span>
+              <p>선택한 동은 아래 그래프에서 강조됩니다. 네 동의 매출을 함께 비교할 수 있어요.</p>
+            </div>
+          </aside>
+        </div>
+        <p class="map-credit">행정동 경계 · 서울시 행정동 경계 자료</p>
+      </section>
+
+      <section class="panel chart-panel" aria-labelledby="chart-title">
+        <div class="panel-heading chart-heading">
+          <div>
+            <p class="section-kicker">02 <span>SALES COMPARISON</span></p>
+            <h2 id="chart-title">업종별 매출 비교</h2>
+          </div>
+          <div class="data-badge"><span class="badge-dot"></span> 추정매출 · 단위 원</div>
+        </div>
+
+        <div class="control-row">
+          <label class="industry-control" for="industry-select">
+            <span>서비스 업종</span>
+            <span class="select-wrap">
+              <select id="industry-select" aria-label="서비스 업종 선택"></select>
+            </span>
+          </label>
+          <div class="metric-tabs" role="tablist" aria-label="매출 구분">
+            <button class="metric-tab is-active" type="button" role="tab" aria-selected="true" data-metric="total">전체 매출</button>
+            <button class="metric-tab" type="button" role="tab" aria-selected="false" data-metric="weekday">주중</button>
+            <button class="metric-tab" type="button" role="tab" aria-selected="false" data-metric="weekend">주말</button>
+          </div>
+        </div>
+
+        <div class="chart-summary" aria-live="polite">
+          <div>
+            <p class="summary-label" id="summary-label">선택 업종 · 네 동 합계</p>
+            <p class="summary-value" id="summary-value">—</p>
+          </div>
+          <p class="summary-caption" id="summary-caption">업종을 선택하면 행정동별 매출을 비교합니다.</p>
+        </div>
+
+        <div class="chart-scroll" id="chart-scroll">
+          <svg id="sales-chart" class="sales-chart" role="img" aria-label="선택한 업종의 행정동별 추정매출 그래프" viewBox="0 0 860 350"></svg>
+        </div>
+        <div class="chart-legend"><span class="legend-swatch"></span> 행정동별 추정매출 <span class="legend-separator">·</span> 그래프 막대를 선택해 동 강조</div>
+      </section>
+
+      <footer class="site-footer">
+        <p>자료 기준: 2026년 1분기 · 카드 매출 기반 추정치</p>
+        <p>출처: <a href="https://data.seoul.go.kr/dataList/OA-22175/S/1/datasetView.do" target="_blank" rel="noreferrer">서울시 상권분석서비스(추정매출-행정동)</a></p>
+      </footer>
+    </main>
+  </body>
+</html>
