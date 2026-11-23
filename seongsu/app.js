@@ -14,6 +14,8 @@ const METRICS = {
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 let salesRows = [];
+let populationRows = [];
+let populationDateLabel = "";
 let selectedArea = AREA_NAMES[0];
 let selectedMetric = "total";
 let selectedIndustry = "";
@@ -44,6 +46,10 @@ function shortNumber(value) {
 
 function fullWon(value) {
   return `${Math.round(Number(value) || 0).toLocaleString("ko-KR")}원`;
+}
+
+function formatPeople(value) {
+  return `${new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 1 }).format(Number(value) || 0)}명`;
 }
 
 function getFeatureName(feature) {
@@ -156,6 +162,7 @@ function renderAreaButtons() {
 function selectArea(area) {
   selectedArea = area;
   syncAreaSelection();
+  renderTopIndustries();
   renderChart();
 }
 
@@ -179,6 +186,121 @@ function getAreaTotal(area, field) {
   return salesRows
     .filter((row) => row.AREA_LABEL === area && row.SVC_INDUTY_CD_NM === selectedIndustry)
     .reduce((sum, row) => sum + (Number(row[field]) || 0), 0);
+}
+
+function renderTopIndustries() {
+  if (!salesRows.length) return;
+  const field = "THSMON_SELNG_AMT";
+  const areaRows = salesRows
+    .filter((row) => row.AREA_LABEL === selectedArea)
+    .map((row) => ({
+      industry: row.SVC_INDUTY_CD_NM,
+      amount: Number(row[field]) || 0,
+    }))
+    .sort((a, b) => b.amount - a.amount);
+  const topRows = areaRows.slice(0, 5);
+  const topTotal = topRows.reduce((sum, row) => sum + row.amount, 0);
+  document.querySelector("#top-area-name").textContent = selectedArea;
+  document.querySelector("#top5-total").textContent = `상위 5개 합계 ${formatWon(topTotal)}`;
+
+  const list = document.querySelector("#top-industry-list");
+  list.replaceChildren();
+  if (!topRows.length) {
+    const empty = document.createElement("p");
+    empty.className = "top-empty";
+    empty.textContent = "선택한 행정동의 매출 자료가 없습니다.";
+    list.append(empty);
+    return;
+  }
+
+  const maxAmount = topRows[0].amount || 1;
+  topRows.forEach((row, index) => {
+    const item = document.createElement("div");
+    item.className = "top-industry-row";
+    const rank = document.createElement("span");
+    rank.className = "top-rank";
+    rank.textContent = String(index + 1).padStart(2, "0");
+    const content = document.createElement("div");
+    content.className = "top-industry-content";
+    const labels = document.createElement("div");
+    labels.className = "top-industry-labels";
+    const name = document.createElement("strong");
+    name.className = "top-industry-name";
+    name.textContent = row.industry;
+    const amount = document.createElement("span");
+    amount.className = "top-industry-value";
+    amount.textContent = fullWon(row.amount);
+    labels.append(name, amount);
+    const track = document.createElement("div");
+    track.className = "top-bar-track";
+    const bar = document.createElement("div");
+    bar.className = "top-bar-fill";
+    bar.style.width = `${Math.max(2, (row.amount / maxAmount) * 100)}%`;
+    track.append(bar);
+    content.append(labels, track);
+    item.append(rank, content);
+    list.append(item);
+  });
+}
+
+function renderPopulation(data) {
+  populationRows = data.rows || [];
+  populationDateLabel = data.dateLabel || data.date || "";
+  document.querySelector("#population-date").textContent = populationDateLabel;
+
+  const hours = [...new Set(populationRows.map((row) => row.time))].sort();
+  const values = hours.map((time) => ({
+    time,
+    total: populationRows
+      .filter((row) => row.time === time)
+      .reduce((sum, row) => sum + (Number(row.spop) || 0), 0),
+  }));
+  if (!values.length) throw new Error("생활인구 자료가 비어 있습니다.");
+
+  const peak = values.reduce((best, point) => point.total > best.total ? point : best, values[0]);
+  document.querySelector("#population-stat-label").textContent = `네 동 합계 · ${peak.time}시 최고`;
+  document.querySelector("#population-stat-value").textContent = formatPeople(peak.total);
+  const svg = document.querySelector("#population-chart");
+  const width = 560;
+  const height = 285;
+  const left = 47;
+  const right = 543;
+  const top = 18;
+  const bottom = 228;
+  const plotWidth = right - left;
+  const plotHeight = bottom - top;
+  const maxValue = Math.ceil(Math.max(...values.map((point) => point.total)) / 10000) * 10000;
+  const x = (index) => left + (index / Math.max(values.length - 1, 1)) * plotWidth;
+  const y = (value) => bottom - (value / maxValue) * plotHeight;
+  svg.replaceChildren();
+
+  const defs = svgElement("defs");
+  const gradient = svgElement("linearGradient", { id: "population-fill", x1: "0", x2: "0", y1: "0", y2: "1" });
+  gradient.append(svgElement("stop", { offset: "0%", "stop-color": "#78ad96", "stop-opacity": ".28" }));
+  gradient.append(svgElement("stop", { offset: "100%", "stop-color": "#78ad96", "stop-opacity": ".015" }));
+  defs.append(gradient);
+  svg.append(defs);
+
+  for (let tick = 0; tick <= 4; tick += 1) {
+    const value = (maxValue * tick) / 4;
+    const yy = y(value);
+    svg.append(svgElement("line", { x1: left, y1: yy, x2: right, y2: yy, class: "population-axis" }));
+    svg.append(svgElement("text", { x: left - 7, y: yy + 4, class: "population-axis-label", "text-anchor": "end" }, shortNumber(value / 10000)));
+  }
+
+  const pathLine = values.map((point, index) => `${index ? "L" : "M"} ${x(index).toFixed(1)} ${y(point.total).toFixed(1)}`).join(" ");
+  const areaPath = `${pathLine} L ${x(values.length - 1).toFixed(1)} ${bottom} L ${x(0).toFixed(1)} ${bottom} Z`;
+  svg.append(svgElement("path", { d: areaPath, fill: "url(#population-fill)" }));
+  svg.append(svgElement("path", { d: pathLine, fill: "none", stroke: "#28765d", "stroke-width": "3", "stroke-linecap": "round", "stroke-linejoin": "round" }));
+
+  const labelHours = new Set(["00", "06", "12", "18", "23"]);
+  values.forEach((point, index) => {
+    if (!labelHours.has(point.time)) return;
+    svg.append(svgElement("circle", { cx: x(index), cy: y(point.total), r: "4", fill: "#e87555", stroke: "#ffffff", "stroke-width": "2" }));
+    svg.append(svgElement("text", { x: x(index), y: bottom + 22, class: "population-axis-label", "text-anchor": "middle" }, `${point.time}시`));
+  });
+  svg.append(svgElement("text", { x: left, y: 12, class: "population-axis-label" }, "만 명"));
+  document.querySelector("#population-note").textContent = `${populationDateLabel} · 내국인 생활인구 합계 · 시간별 추정 인원`;
 }
 
 function renderChart() {
@@ -290,14 +412,21 @@ function setupControls(data) {
 
 async function initialize() {
   try {
-    const [salesResponse, mapResponse] = await Promise.all([
+    const [salesResponse, mapResponse, populationResponse] = await Promise.all([
       fetch("data/profit-2026-q1.json"),
       fetch("data/seongsu-dongs.geojson"),
+      fetch("data/living-pop-2026-11-18.json"),
     ]);
-    if (!salesResponse.ok || !mapResponse.ok) throw new Error("데이터 파일을 불러오지 못했습니다.");
-    const [sales, geojson] = await Promise.all([salesResponse.json(), mapResponse.json()]);
+    if (!salesResponse.ok || !mapResponse.ok || !populationResponse.ok) throw new Error("데이터 파일을 불러오지 못했습니다.");
+    const [sales, geojson, population] = await Promise.all([
+      salesResponse.json(),
+      mapResponse.json(),
+      populationResponse.json(),
+    ]);
     setupControls(sales);
     renderMap(geojson);
+    renderPopulation(population);
+    renderTopIndustries();
     renderChart();
   } catch (error) {
     document.querySelector("#map-loading").textContent = "자료를 불러오지 못했습니다. 페이지를 새로고침해 주세요.";

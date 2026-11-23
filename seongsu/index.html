@@ -41,27 +41,54 @@
           <p class="panel-hint">지도를 눌러 행정동을 선택하세요</p>
         </div>
         <div class="map-layout">
-          <div class="map-frame" id="map-frame">
-            <div class="map-loading" id="map-loading">행정동 경계를 불러오는 중</div>
-            <svg id="neighborhood-map" class="neighborhood-map" role="group" aria-label="성수 네 행정동 경계 지도" viewBox="0 0 860 350" hidden></svg>
-          </div>
-          <aside class="map-aside">
-            <p class="aside-label">행정동 선택</p>
-            <div class="area-list" id="area-list" aria-label="행정동 목록"></div>
-            <div class="selected-area-note">
-              <span class="note-rule"></span>
-              <p>선택한 동은 아래 그래프에서 강조됩니다. 네 동의 매출을 함께 비교할 수 있어요.</p>
+          <div class="map-column">
+            <div class="map-frame" id="map-frame">
+              <div class="map-loading" id="map-loading">행정동 경계를 불러오는 중</div>
+              <svg id="neighborhood-map" class="neighborhood-map" role="group" aria-label="성수 네 행정동 경계 지도" viewBox="0 0 860 350" hidden></svg>
             </div>
+            <div class="area-list" id="area-list" aria-label="행정동 목록"></div>
+          </div>
+          <aside class="population-panel" aria-labelledby="population-title">
+            <div class="population-heading">
+              <div>
+                <p class="population-kicker">LIVING POPULATION</p>
+                <h3 id="population-title">시간대별 생활인구</h3>
+              </div>
+              <span class="population-date" id="population-date">자료 확인 중</span>
+            </div>
+            <div class="population-stat">
+              <span id="population-stat-label">선택 동 · 하루 최대</span>
+              <strong id="population-stat-value">—</strong>
+            </div>
+            <div class="population-chart-wrap">
+              <svg id="population-chart" class="population-chart" role="img" aria-label="성수 네 행정동의 시간대별 생활인구 추이" viewBox="0 0 560 285"></svg>
+            </div>
+            <div class="population-legend" id="population-legend" aria-label="행정동 범례"></div>
+            <p class="population-note" id="population-note">내국인 생활인구 합계 · 시간별 추정 인원</p>
           </aside>
         </div>
         <p class="map-credit">행정동 경계 · 서울시 행정동 경계 자료</p>
       </section>
 
+      <section class="panel top-industries-panel" aria-labelledby="top-industries-title">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">02 <span>TOP INDUSTRIES</span></p>
+            <h2 id="top-industries-title"><span id="top-area-name">성수1가제1동</span> 매출 상위 5개 업종</h2>
+          </div>
+          <div class="top5-meta">
+            <span id="top5-period">2026년 1분기 · 전체 매출 기준</span>
+            <strong id="top5-total">—</strong>
+          </div>
+        </div>
+        <div class="top-industry-list" id="top-industry-list" aria-live="polite"></div>
+      </section>
+
       <section class="panel chart-panel" aria-labelledby="chart-title">
         <div class="panel-heading chart-heading">
           <div>
-            <p class="section-kicker">02 <span>SALES COMPARISON</span></p>
-            <h2 id="chart-title">업종별 매출 비교</h2>
+            <p class="section-kicker">03 <span>SALES COMPARISON</span></p>
+            <h2 id="chart-title">선택 업종 · 네 동 매출 비교</h2>
           </div>
           <div class="data-badge"><span class="badge-dot"></span> 추정매출 · 단위 원</div>
         </div>
@@ -96,7 +123,8 @@
 
       <footer class="site-footer">
         <p>자료 기준: 2026년 1분기 · 카드 매출 기반 추정치</p>
-        <p>출처: <a href="https://data.seoul.go.kr/dataList/OA-22175/S/1/datasetView.do" target="_blank" rel="noreferrer">서울시 상권분석서비스(추정매출-행정동)</a></p>
+        <p>생활인구 출처: 서울특별시·KT, 서울시 통신데이터 · <a href="https://data.seoul.go.kr/dataList/OA-23016/S/1/datasetView.do" target="_blank" rel="noreferrer">[내국인] 행정동별 서울 생활인구(250m)</a></p>
+        <p>매출 출처: <a href="https://data.seoul.go.kr/dataList/OA-22175/S/1/datasetView.do" target="_blank" rel="noreferrer">서울시 상권분석서비스(추정매출-행정동)</a></p>
       </footer>
     </main>
   </body>
